@@ -1,0 +1,423 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* ========================================
+   LOGIN PAGE LAYOUT
+   ======================================== */
+
+.login-page {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.login-side {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-side {
+  width: 40%;
+  background: #fafbfc;
+  padding: 2rem 3rem;
+}
+
+.showcase-side {
+  width: 60%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ========================================
+   LOGIN FORM STYLES
+   ======================================== */
+
+.login-form-container {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.login-logo {
+  margin-bottom: 2rem;
+}
+
+.admin-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-top: -1rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.provider-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+/* Social Buttons */
+.social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid #e2e5ea;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #333;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.social-btn:hover {
+  border-color: #c5c9d2;
+  background: #f7f8fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.social-btn:active {
+  transform: translateY(0);
+}
+
+/* Divider */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.divider-text {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.logging-in-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.2s;
+}
+
+.logging-in-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Form Fields */
+.login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.field-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #555;
+  min-width: 38px;
+  flex-shrink: 0;
+}
+
+.field-input {
+  flex: 1;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #e2e5ea;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: #333;
+  background: #fff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.field-input::placeholder {
+  color: #b0b5bf;
+  font-weight: 400;
+}
+
+.field-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Sign In Button */
+.signin-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(26, 26, 46, 0.25);
+}
+
+.signin-btn:hover {
+  background: linear-gradient(135deg, #0f0f1e, #0d1528);
+  box-shadow: 0 4px 16px rgba(26, 26, 46, 0.35);
+  transform: translateY(-1px);
+}
+
+.signin-btn:active {
+  transform: translateY(0);
+}
+
+.signin-arrow {
+  font-size: 0.85rem;
+  transition: transform 0.2s;
+}
+
+.signin-btn:hover .signin-arrow {
+  transform: translateX(3px);
+}
+
+/* Sign Up Prompt */
+.signup-prompt {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  color: #888;
+  text-align: center;
+}
+
+.signup-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.signup-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Switch Login Prompt */
+.switch-login-prompt {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #555;
+  text-align: center;
+  margin-top: 0.75rem;
+  font-weight: 500;
+}
+
+.switch-login-link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.2s;
+}
+
+.switch-login-link:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* ========================================
+   SHOWCASE PANEL
+   ======================================== */
+
+.showcase-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f172a 0%, #312e81 35%, #1e40af 65%, #2563eb 100%);
+  overflow: hidden;
+}
+
+.showcase-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 20%,
+      rgba(99, 102, 241, 0.15) 0%,
+      transparent 50%),
+    radial-gradient(ellipse at 70% 80%,
+      rgba(37, 99, 235, 0.1) 0%,
+      transparent 50%);
+  animation: showcaseShimmer 8s ease-in-out infinite alternate;
+}
+
+@keyframes showcaseShimmer {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-2%, 2%) rotate(1deg);
+  }
+}
+
+.showcase-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 2rem 10rem;
+  text-align: center;
+}
+
+.showcase-logo-icon {
+  margin: 0.5rem 0;
+  filter: brightness(1.5);
+}
+
+.showcase-clario-icon path {
+  stroke: rgba(255, 255, 255, 0.9);
+}
+
+.showcase-tagline {
+  font-family: 'Raleway', serif;
+  font-size: 2.4rem;
+  font-weight: 600;
+  font-style: italic;
+  color: #fff;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  white-space: pre-line;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  text-align: center;
+  padding-bottom: 1rem;
+}
+
+.showcase-marquee {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 1rem 0;
+}
+
+/* Override marquee card styles for dark background */
+.showcase-marquee figure {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.showcase-marquee figcaption {
+  color: #fff !important;
+}
+
+.showcase-marquee p {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.showcase-marquee blockquote {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Gradient badge overrides for showcase */
+.showcase-content .group {
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: inset 0 -8px 10px rgba(143, 223, 255, 0.08) !important;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 900px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .form-side,
+  .showcase-side {
+    width: 100%;
+  }
+
+  .form-side {
+    order: 1;
+    padding: 2rem 1.5rem;
+    min-height: 50vh;
+  }
+
+  .showcase-side {
+    order: 2;
+    min-height: 50vh;
+  }
+
+  .showcase-tagline {
+    font-size: 2rem;
+  }
+}
