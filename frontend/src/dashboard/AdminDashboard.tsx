@@ -60,14 +60,6 @@ function buildStatCards(stats: DashboardStats): StatCard[] {
       iconBg: "rgba(34,197,94,0.12)",
       iconColor: "#16a34a",
     },
-    {
-      id: "active-users",
-      label: "Active Users",
-      value: String(stats.totalUsers),
-      icon: <Users size={22} />,
-      iconBg: "rgba(59,130,246,0.12)",
-      iconColor: "#3b82f6",
-    },
   ];
 }
 
@@ -122,7 +114,7 @@ const s: Record<string, CSSProperties> = {
   },
   statsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
+    gridTemplateColumns: "repeat(3, 1fr)",
     gap: 16,
     marginBottom: 28,
   },

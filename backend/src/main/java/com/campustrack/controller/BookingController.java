@@ -16,6 +16,11 @@ public class BookingController {
     @Autowired
     private BookingRepository bookingRepository;
 
+    @GetMapping
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
     @PostMapping
     public Booking createBooking(@RequestBody Booking booking) {
         return bookingRepository.save(booking);

@@ -34,7 +34,6 @@ function App() {
         <Route path="/admin-reports" element={<AdminReports />} />
 
         <Route path="/admin-users" element={<AdminUsers />} />
-        <Route path="/admin-settings" element={<AdminDashboard />} />
         <Route path="/admin-chat" element={<AdminChat />} />
 
         {/* Lost & Found */}

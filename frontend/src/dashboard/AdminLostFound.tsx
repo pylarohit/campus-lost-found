@@ -1,4 +1,4 @@
-import React, { useState, useEffect, CSSProperties } from "react";
+import React, { useState, useEffect, CSSProperties, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "./AdminLayout";
 import {
@@ -20,6 +20,8 @@ import {
     PackageOpen,
     RefreshCw,
     Shield,
+    Plus,
+    Upload,
 } from "lucide-react";
 
 // ── Types ───────────────────────────────────
@@ -38,6 +40,19 @@ interface PostItem {
     createdAt?: string;
     owner: string; // reportedBy or foundBy
     type: "lost" | "found";
+}
+
+interface BookingItem {
+    id: number;
+    resourceId: number;
+    userEmail: string;
+    itemName: string;
+    place: string;
+    phone: string;
+    startTime: string;
+    endTime: string;
+    status: string;
+    createdAt: string;
 }
 
 // ── Styles ──────────────────────────────────
@@ -238,6 +253,26 @@ const s: Record<string, CSSProperties> = {
         cursor: "pointer", background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
         color: "#fff", boxShadow: "0 4px 14px rgba(99,102,241,0.35)", marginTop: 8,
     },
+    uploadArea: {
+        width: "100%", padding: "20px", borderRadius: 10,
+        border: "2px dashed #e2e8f0", background: "#f8fafc",
+        display: "flex", flexDirection: "column", alignItems: "center",
+        justifyContent: "center", gap: 8, cursor: "pointer",
+        transition: "all 0.2s ease", boxSizing: "border-box" as const,
+    },
+    uploadPreview: {
+        width: "100%", borderRadius: 10, overflow: "hidden",
+        position: "relative", border: "1.5px solid #e2e8f0", marginTop: 8
+    },
+    uploadPreviewImg: {
+        width: "100%", height: 140, objectFit: "cover" as const, display: "block",
+    },
+    uploadRemove: {
+        position: "absolute", top: 8, right: 8, width: 28, height: 28,
+        borderRadius: 6, border: "none", background: "rgba(0,0,0,0.5)",
+        color: "#fff", cursor: "pointer", display: "flex",
+        alignItems: "center", justifyContent: "center",
+    }
 };
 
 const statusColors: Record<string, { bg: string; color: string }> = {
@@ -257,16 +292,28 @@ const typeColors: Record<string, { bg: string; color: string }> = {
 
 export default function AdminLostFound() {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<"all" | "lost" | "found" | "flagged" | "pending">("pending");
+    const [activeTab, setActiveTab] = useState<"all" | "lost" | "found" | "flagged" | "pending" | "admin" | "bookings">("pending");
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [posts, setPosts] = useState<PostItem[]>([]);
+    const [bookings, setBookings] = useState<BookingItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [hoveredPost, setHoveredPost] = useState<string | null>(null);
     const [hoveredAction, setHoveredAction] = useState<string | null>(null);
     const [searchFocused, setSearchFocused] = useState(false);
     const [editItem, setEditItem] = useState<PostItem | null>(null);
     const [viewItem, setViewItem] = useState<PostItem | null>(null);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [reportType, setReportType] = useState<"lost" | "found">("lost");
+
+    // Form state for reporting
+    const [formItemName, setFormItemName] = useState("");
+    const [formDesc, setFormDesc] = useState("");
+    const [formLocation, setFormLocation] = useState("");
+    const [formCategory, setFormCategory] = useState("");
+    const [formTags, setFormTags] = useState("");
+    const [formImage, setFormImage] = useState("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Edit form state
     const [editName, setEditName] = useState("");
@@ -274,6 +321,16 @@ export default function AdminLostFound() {
     const [editLocation, setEditLocation] = useState("");
     const [editCategory, setEditCategory] = useState("");
     const [editStatus, setEditStatus] = useState("");
+    const [editImage, setEditImage] = useState("");
+    const [editTags, setEditTags] = useState("");
+
+    // Booking Edit state
+    const [editBooking, setEditBooking] = useState<BookingItem | null>(null);
+    const [ebPlace, setEbPlace] = useState("");
+    const [ebPhone, setEbPhone] = useState("");
+    const [ebDate, setEbDate] = useState("");
+    const [ebTime, setEbTime] = useState("");
+    const [ebStatus, setEbStatus] = useState("");
 
     useEffect(() => {
         const role = localStorage.getItem("role");
@@ -305,12 +362,61 @@ export default function AdminLostFound() {
             setPosts(allPosts);
         } catch (err) {
             console.error("Failed to fetch posts:", err);
-        } finally {
-            setLoading(false);
         }
     };
 
-    useEffect(() => { fetchPosts(); }, []);
+    const fetchBookings = async () => {
+        try {
+            const res = await fetch("http://localhost:8080/api/bookings");
+            if (res.ok) {
+                const data = await res.json();
+                setBookings(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch bookings:", err);
+        }
+    };
+
+    const handleRefresh = async () => {
+        setLoading(true);
+        await Promise.all([fetchPosts(), fetchBookings()]);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        handleRefresh();
+    }, []);
+
+    // Helper to compress image
+    const compressImage = (file: File, maxWidth = 600): Promise<string> => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new window.Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    let w = img.width, h = img.height;
+                    if (w > maxWidth) { h = (h * maxWidth) / w; w = maxWidth; }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext("2d")!;
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL("image/jpeg", 0.7));
+                };
+                img.src = e.target?.result as string;
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, forEdit = false) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const compressed = await compressImage(file);
+            if (forEdit) setEditImage(compressed);
+            else setFormImage(compressed);
+        }
+    };
 
     // Actions
     const handleApprove = async (item: PostItem) => {
@@ -335,6 +441,8 @@ export default function AdminLostFound() {
         setEditLocation(item.location || "");
         setEditCategory(item.category || "");
         setEditStatus(item.status);
+        setEditImage(item.imageUrl || "");
+        setEditTags(item.tags || "");
     };
 
     const handleSaveEdit = async () => {
@@ -346,7 +454,8 @@ export default function AdminLostFound() {
                 body: JSON.stringify({
                     itemName: editName, description: editDesc,
                     location: editLocation, category: editCategory,
-                    status: editStatus,
+                    status: editStatus, imageUrl: editImage,
+                    tags: editTags,
                 }),
             });
             setEditItem(null);
@@ -354,14 +463,93 @@ export default function AdminLostFound() {
         } catch { alert("Failed to save changes."); }
     };
 
+    const handleReportSubmit = async () => {
+        if (!formItemName.trim() || !formLocation.trim()) return;
+        try {
+            const adminEmail = localStorage.getItem("adminEmail") || "admin@campus.edu";
+            const res = await fetch(`http://localhost:8080/api/${reportType}/report`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    itemName: formItemName,
+                    description: formDesc,
+                    location: formLocation,
+                    [reportType === "lost" ? "reportedBy" : "foundBy"]: adminEmail,
+                    category: formCategory,
+                    tags: formTags,
+                    imageUrl: formImage,
+                    status: "active" // Admin posts are auto-approved
+                }),
+            });
+            if (res.ok) {
+                setShowReportModal(false);
+                setFormItemName(""); setFormDesc(""); setFormLocation("");
+                setFormCategory(""); setFormTags(""); setFormImage("");
+                fetchPosts();
+            } else {
+                alert("Error submitting post.");
+            }
+        } catch {
+            alert("Network error.");
+        }
+    };
+
+    const handleUpdateBookingStatus = async (id: number, status: string) => {
+        try {
+            await fetch(`http://localhost:8080/api/bookings/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status }),
+            });
+            fetchBookings();
+        } catch {
+            alert("Failed to update booking status.");
+        }
+    };
+
+    const openEditBooking = (b: BookingItem) => {
+        const dt = new Date(b.startTime);
+        setEbDate(dt.toISOString().split("T")[0]);
+        setEbTime(dt.toTimeString().slice(0, 5));
+        setEbPlace(b.place);
+        setEbPhone(b.phone);
+        setEbStatus(b.status);
+        setEditBooking(b);
+    };
+
+    const handleSaveBookingEdit = async () => {
+        if (!editBooking) return;
+        try {
+            await fetch(`http://localhost:8080/api/bookings/${editBooking.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    startTime: `${ebDate}T${ebTime}:00`,
+                    endTime: `${ebDate}T${ebTime}:00`,
+                    place: ebPlace,
+                    phone: ebPhone,
+                    status: ebStatus,
+                }),
+            });
+            setEditBooking(null);
+            handleRefresh();
+        } catch {
+            alert("Failed to save booking changes.");
+        }
+    };
+
     // Filter
     const filteredPosts = posts.filter(post => {
+        const adminEmail = localStorage.getItem("adminEmail") || "admin@campus.edu";
+        const isFromAdmin = post.owner === adminEmail || post.owner === "admin@campus.edu";
+
         const matchesTab =
             activeTab === "all" ? true :
                 activeTab === "lost" ? post.type === "lost" :
                     activeTab === "found" ? post.type === "found" :
                         activeTab === "pending" ? post.status === "pending" :
-                            post.flagged;
+                            activeTab === "admin" ? isFromAdmin :
+                                post.flagged;
         const matchesStatus = statusFilter === "all" || post.status === statusFilter;
         const matchesSearch =
             post.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -370,12 +558,23 @@ export default function AdminLostFound() {
         return matchesTab && matchesStatus && matchesSearch;
     });
 
+    // Bookings Filter
+    const filteredBookings = bookings.filter(b => {
+        const matchesSearch =
+            b.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            b.userEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            b.place.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesSearch;
+    });
+
     // Stats
+    const adminEmail = localStorage.getItem("adminEmail") || "admin@campus.edu";
     const totalLost = posts.filter(p => p.type === "lost").length;
     const totalFound = posts.filter(p => p.type === "found").length;
     const totalFlagged = posts.filter(p => p.flagged).length;
     const totalPending = posts.filter(p => p.status === "pending").length;
     const totalActive = posts.filter(p => p.status === "active").length;
+    const totalAdminPosts = posts.filter(p => p.owner === adminEmail || p.owner === "admin@campus.edu").length;
 
     return (
         <AdminLayout>
@@ -400,17 +599,41 @@ export default function AdminLostFound() {
                             </p>
                         </div>
                     </div>
-                    <button
-                        style={{
-                            ...s.refreshBtn,
-                            ...(hoveredAction === "refresh" ? { background: "#f8fafc", borderColor: "#cbd5e1" } : {}),
-                        }}
-                        onClick={fetchPosts}
-                        onMouseEnter={() => setHoveredAction("refresh")}
-                        onMouseLeave={() => setHoveredAction(null)}
-                    >
-                        <RefreshCw size={14} /> Refresh
-                    </button>
+                    <div style={{ display: "flex", gap: 10 }}>
+                        <button
+                            style={{
+                                ...s.refreshBtn,
+                                ...(hoveredAction === "refresh" ? { background: "#f8fafc", borderColor: "#cbd5e1" } : {}),
+                            }}
+                            onClick={handleRefresh}
+                            onMouseEnter={() => setHoveredAction("refresh")}
+                            onMouseLeave={() => setHoveredAction(null)}
+                        >
+                            <RefreshCw size={14} /> Refresh
+                        </button>
+                        <button
+                            style={{
+                                ...s.refreshBtn,
+                                background: "rgba(239, 68, 68, 0.05)",
+                                borderColor: "rgba(239, 68, 68, 0.2)",
+                                color: "#ef4444",
+                            }}
+                            onClick={() => { setReportType("lost"); setShowReportModal(true); }}
+                        >
+                            <Plus size={14} /> Post Lost
+                        </button>
+                        <button
+                            style={{
+                                ...s.refreshBtn,
+                                background: "rgba(16, 185, 129, 0.05)",
+                                borderColor: "rgba(16, 185, 129, 0.2)",
+                                color: "#059669",
+                            }}
+                            onClick={() => { setReportType("found"); setShowReportModal(true); }}
+                        >
+                            <Plus size={14} /> Post Found
+                        </button>
+                    </div>
                 </div>
 
                 {/* Stats */}
@@ -438,8 +661,10 @@ export default function AdminLostFound() {
                     {([
                         { key: "pending", label: "⏳ Pending", count: totalPending },
                         { key: "all", label: "All Posts", count: posts.length },
+                        { key: "admin", label: "🛡️ Admin", count: totalAdminPosts },
                         { key: "lost", label: "Lost", count: totalLost },
                         { key: "found", label: "Found", count: totalFound },
+                        { key: "bookings", label: "📅 Bookings", count: bookings.length },
                         { key: "flagged", label: "Flagged", count: totalFlagged },
                     ] as const).map(tab => (
                         <button
@@ -461,34 +686,55 @@ export default function AdminLostFound() {
                 </div>
 
                 {/* Search & Filter */}
-                <div style={s.controlRow}>
-                    <div style={s.searchBar as any}>
-                        <Search size={18} style={s.searchIcon as any} />
-                        <input
-                            type="text" placeholder="Search posts by name, user, or category..."
-                            style={{
-                                ...s.searchInput,
-                                ...(searchFocused ? { borderColor: "#6366f1", boxShadow: "0 0 0 3px rgba(99,102,241,0.08)" } : {}),
-                            }}
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            onFocus={() => setSearchFocused(true)}
-                            onBlur={() => setSearchFocused(false)}
-                        />
+                {activeTab !== "bookings" && (
+                    <div style={s.controlRow}>
+                        <div style={s.searchBar as any}>
+                            <Search size={18} style={s.searchIcon as any} />
+                            <input
+                                type="text" placeholder="Search posts by name, user, or category..."
+                                style={{
+                                    ...s.searchInput,
+                                    ...(searchFocused ? { borderColor: "#6366f1", boxShadow: "0 0 0 3px rgba(99,102,241,0.08)" } : {}),
+                                }}
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                onFocus={() => setSearchFocused(true)}
+                                onBlur={() => setSearchFocused(false)}
+                            />
+                        </div>
+                        <select
+                            style={s.filterSelect}
+                            value={statusFilter}
+                            onChange={e => setStatusFilter(e.target.value)}
+                        >
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="flagged">Flagged</option>
+                            <option value="pending">Pending</option>
+                            <option value="recovered">Recovered</option>
+                            <option value="claimed">Claimed</option>
+                        </select>
                     </div>
-                    <select
-                        style={s.filterSelect}
-                        value={statusFilter}
-                        onChange={e => setStatusFilter(e.target.value)}
-                    >
-                        <option value="all">All Status</option>
-                        <option value="active">Active</option>
-                        <option value="flagged">Flagged</option>
-                        <option value="pending">Pending</option>
-                        <option value="recovered">Recovered</option>
-                        <option value="claimed">Claimed</option>
-                    </select>
-                </div>
+                )}
+
+                {activeTab === "bookings" && (
+                    <div style={s.controlRow}>
+                        <div style={s.searchBar as any}>
+                            <Search size={18} style={s.searchIcon as any} />
+                            <input
+                                type="text" placeholder="Search bookings by item, email, or place..."
+                                style={{
+                                    ...s.searchInput,
+                                    ...(searchFocused ? { borderColor: "#6366f1", boxShadow: "0 0 0 3px rgba(99,102,241,0.08)" } : {}),
+                                }}
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
+                                onFocus={() => setSearchFocused(true)}
+                                onBlur={() => setSearchFocused(false)}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* Post List */}
                 {loading ? (
@@ -498,127 +744,239 @@ export default function AdminLostFound() {
                     </div>
                 ) : (
                     <div style={s.list as any}>
-                        {filteredPosts.length === 0 ? (
-                            <div style={s.emptyState as any}>No posts found.</div>
-                        ) : (
-                            filteredPosts.map(post => {
-                                const sc = statusColors[post.status] || statusColors.active;
-                                const tc = typeColors[post.type];
-                                const key = `${post.type}-${post.id}`;
-                                return (
-                                    <div
-                                        key={key}
-                                        style={{
-                                            ...s.postItem,
-                                            ...(hoveredPost === key
-                                                ? { background: "#f8fafc", borderColor: "#e2e8f0" }
-                                                : {}),
-                                            ...(post.flagged ? { borderLeft: "3px solid #ef4444" } : {}),
-                                        }}
-                                        onMouseEnter={() => setHoveredPost(key)}
-                                        onMouseLeave={() => setHoveredPost(null)}
-                                    >
-                                        {/* Thumbnail */}
-                                        <div style={s.postThumbnail}>
-                                            {post.imageUrl ? (
-                                                <img src={post.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                                            ) : (
-                                                <ImageIcon size={20} style={{ color: "#cbd5e1" }} />
-                                            )}
-                                        </div>
-
-                                        {/* Info */}
-                                        <div style={s.postInfo as any}>
-                                            <span style={s.postTitle}>{post.itemName}</span>
-                                            <div style={s.postMeta}>
-                                                <span>By {post.owner}</span>
-                                                {post.category && <span>· {post.category}</span>}
-                                                {post.location && <span>· 📍 {post.location}</span>}
+                        {activeTab === "bookings" ? (
+                            filteredBookings.length === 0 ? (
+                                <div style={s.emptyState as any}>No bookings found.</div>
+                            ) : (
+                                filteredBookings.map(b => (
+                                    <div key={b.id} style={s.postItem}>
+                                        <div style={s.statIcon as any}>
+                                            <div style={{ ...s.statIcon, background: "rgba(99,102,241,0.1)", color: "#6366f1" }}>
+                                                <PackageOpen size={20} />
                                             </div>
-                                            {post.flagged && post.flagReason && (
-                                                <span style={{
-                                                    fontFamily: "'Inter', sans-serif", fontSize: "0.68rem",
-                                                    color: "#dc2626", marginTop: 2,
-                                                }}>
-                                                    ⚠️ {post.flagReason}
-                                                </span>
-                                            )}
                                         </div>
-
-                                        {/* Badges */}
-                                        <div style={s.postBadges}>
+                                        <div style={s.postInfo as any}>
+                                            <span style={s.postTitle as any}>{b.itemName}</span>
+                                            <div style={s.postMeta as any}>
+                                                <span>User: {b.userEmail}</span>
+                                                <span>📍 {b.place}</span>
+                                                <span>📞 {b.phone}</span>
+                                            </div>
+                                            <div style={{ fontSize: "0.7rem", color: "#64748b", marginTop: 4 }}>
+                                                Time: {new Date(b.startTime).toLocaleString()} - {new Date(b.endTime).toLocaleString()}
+                                            </div>
+                                        </div>
+                                        <div style={s.postBadges as any}>
                                             <span style={{
-                                                ...s.typeBadge, background: tc.bg, color: tc.color,
+                                                ...s.statusBadge,
+                                                background: b.status === "confirmed" ? "rgba(34,197,94,0.1)" : b.status === "completed" ? "rgba(99,102,241,0.1)" : "rgba(239,68,68,0.1)",
+                                                color: b.status === "confirmed" ? "#16a34a" : b.status === "completed" ? "#6366f1" : "#dc2626",
                                             }}>
-                                                {post.type.toUpperCase()}
-                                            </span>
-                                            <span style={{
-                                                ...s.statusBadge, background: sc.bg, color: sc.color,
-                                            }}>
-                                                {post.status}
+                                                {b.status}
                                             </span>
                                         </div>
-
-                                        {/* Actions */}
-                                        <div style={s.postActions}>
+                                        <div style={s.postActions as any}>
                                             <button
                                                 style={{
                                                     ...s.actionBtn,
-                                                    ...(hoveredAction === `view-${key}` ? { background: "rgba(99,102,241,0.1)", color: "#6366f1" } : {}),
+                                                    ...(hoveredAction === `edit-bk-${b.id}` ? { background: "rgba(59,130,246,0.1)", color: "#3b82f6" } : {}),
                                                 }}
-                                                title="View"
-                                                onClick={() => setViewItem(post)}
-                                                onMouseEnter={() => setHoveredAction(`view-${key}`)}
-                                                onMouseLeave={() => setHoveredAction(null)}
-                                            >
-                                                <Eye size={15} />
-                                            </button>
-                                            {(post.flagged || post.status === "pending") && (
-                                                <button
-                                                    style={{
-                                                        ...s.actionBtn,
-                                                        ...(hoveredAction === `approve-${key}` ? { background: "rgba(34,197,94,0.1)", color: "#16a34a" } : {}),
-                                                    }}
-                                                    title="Approve"
-                                                    onClick={() => handleApprove(post)}
-                                                    onMouseEnter={() => setHoveredAction(`approve-${key}`)}
-                                                    onMouseLeave={() => setHoveredAction(null)}
-                                                >
-                                                    <Check size={15} />
-                                                </button>
-                                            )}
-                                            <button
-                                                style={{
-                                                    ...s.actionBtn,
-                                                    ...(hoveredAction === `edit-${key}` ? { background: "rgba(59,130,246,0.1)", color: "#3b82f6" } : {}),
-                                                }}
-                                                title="Edit"
-                                                onClick={() => openEdit(post)}
-                                                onMouseEnter={() => setHoveredAction(`edit-${key}`)}
+                                                title="Edit Booking"
+                                                onClick={() => openEditBooking(b)}
+                                                onMouseEnter={() => setHoveredAction(`edit-bk-${b.id}`)}
                                                 onMouseLeave={() => setHoveredAction(null)}
                                             >
                                                 <Edit3 size={15} />
                                             </button>
-                                            <button
-                                                style={{
-                                                    ...s.actionBtn,
-                                                    ...(hoveredAction === `delete-${key}` ? { background: "rgba(239,68,68,0.1)", color: "#dc2626" } : {}),
-                                                }}
-                                                title="Delete"
-                                                onClick={() => handleDelete(post)}
-                                                onMouseEnter={() => setHoveredAction(`delete-${key}`)}
-                                                onMouseLeave={() => setHoveredAction(null)}
+                                            <select
+                                                value={b.status}
+                                                onChange={(e) => handleUpdateBookingStatus(b.id, e.target.value)}
+                                                style={{ ...s.filterSelect, padding: "4px 8px", fontSize: "0.75rem" }}
                                             >
-                                                <Trash2 size={15} />
-                                            </button>
+                                                <option value="confirmed">Confirmed</option>
+                                                <option value="completed">Completed</option>
+                                                <option value="cancelled">Cancelled</option>
+                                            </select>
                                         </div>
                                     </div>
-                                );
-                            })
-                        )}
+                                ))
+                            )
+                        ) : (
+                            filteredPosts.length === 0 ? (
+                                <div style={s.emptyState as any}>No posts found.</div>
+                            ) : (
+                                filteredPosts.map(post => {
+                                    const sc = statusColors[post.status] || statusColors.active;
+                                    const tc = typeColors[post.type];
+                                    const key = `${post.type}-${post.id}`;
+                                    return (
+                                        <div
+                                            key={key}
+                                            style={{
+                                                ...s.postItem,
+                                                ...(hoveredPost === key
+                                                    ? { background: "#f8fafc", borderColor: "#e2e8f0" }
+                                                    : {}),
+                                                ...(post.flagged ? { borderLeft: "3px solid #ef4444" } : {}),
+                                            }}
+                                            onMouseEnter={() => setHoveredPost(key)}
+                                            onMouseLeave={() => setHoveredPost(null)}
+                                        >
+                                            {/* Thumbnail */}
+                                            <div style={s.postThumbnail}>
+                                                {post.imageUrl ? (
+                                                    <img src={post.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                                ) : (
+                                                    <ImageIcon size={20} style={{ color: "#cbd5e1" }} />
+                                                )}
+                                            </div>
+
+                                            {/* Info */}
+                                            <div style={s.postInfo as any}>
+                                                <span style={s.postTitle}>{post.itemName}</span>
+                                                <div style={s.postMeta}>
+                                                    <span>By {post.owner}</span>
+                                                    {post.category && <span>· {post.category}</span>}
+                                                    {post.location && <span>· 📍 {post.location}</span>}
+                                                </div>
+                                                {post.flagged && post.flagReason && (
+                                                    <span style={{
+                                                        fontFamily: "'Inter', sans-serif", fontSize: "0.68rem",
+                                                        color: "#dc2626", marginTop: 2,
+                                                    }}>
+                                                        ⚠️ {post.flagReason}
+                                                    </span>
+                                                )}
+                                                {(post.owner === adminEmail || post.owner === "admin@campus.edu") && (
+                                                    <span style={{
+                                                        background: "rgba(99,102,241,0.1)", color: "#6366f1",
+                                                        padding: "2px 6px", borderRadius: 4, fontWeight: 700, fontSize: "0.6rem",
+                                                        display: "inline-flex", alignItems: "center", gap: 3, marginTop: 4, width: "fit-content"
+                                                    }}>
+                                                        <Shield size={10} /> ADMIN POSTED
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Badges */}
+                                            <div style={s.postBadges}>
+                                                <span style={{
+                                                    ...s.typeBadge, background: tc.bg, color: tc.color,
+                                                }}>
+                                                    {post.type.toUpperCase()}
+                                                </span>
+                                                <span style={{
+                                                    ...s.statusBadge, background: sc.bg, color: sc.color,
+                                                }}>
+                                                    {post.status}
+                                                </span>
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div style={s.postActions}>
+                                                <button
+                                                    style={{
+                                                        ...s.actionBtn,
+                                                        ...(hoveredAction === `view-${key}` ? { background: "rgba(99,102,241,0.1)", color: "#6366f1" } : {}),
+                                                    }}
+                                                    title="View"
+                                                    onClick={() => setViewItem(post)}
+                                                    onMouseEnter={() => setHoveredAction(`view-${key}`)}
+                                                    onMouseLeave={() => setHoveredAction(null)}
+                                                >
+                                                    <Eye size={15} />
+                                                </button>
+                                                {(post.flagged || post.status === "pending") && (
+                                                    <button
+                                                        style={{
+                                                            ...s.actionBtn,
+                                                            ...(hoveredAction === `approve-${key}` ? { background: "rgba(34,197,94,0.1)", color: "#16a34a" } : {}),
+                                                        }}
+                                                        title="Approve"
+                                                        onClick={() => handleApprove(post)}
+                                                        onMouseEnter={() => setHoveredAction(`approve-${key}`)}
+                                                        onMouseLeave={() => setHoveredAction(null)}
+                                                    >
+                                                        <Check size={15} />
+                                                    </button>
+                                                )}
+                                                <button
+                                                    style={{
+                                                        ...s.actionBtn,
+                                                        ...(hoveredAction === `edit-${key}` ? { background: "rgba(59,130,246,0.1)", color: "#3b82f6" } : {}),
+                                                    }}
+                                                    title="Edit"
+                                                    onClick={() => openEdit(post)}
+                                                    onMouseEnter={() => setHoveredAction(`edit-${key}`)}
+                                                    onMouseLeave={() => setHoveredAction(null)}
+                                                >
+                                                    <Edit3 size={15} />
+                                                </button>
+                                                <button
+                                                    style={{
+                                                        ...s.actionBtn,
+                                                        ...(hoveredAction === `delete-${key}` ? { background: "rgba(239,68,68,0.1)", color: "#dc2626" } : {}),
+                                                    }}
+                                                    title="Delete"
+                                                    onClick={() => handleDelete(post)}
+                                                    onMouseEnter={() => setHoveredAction(`delete-${key}`)}
+                                                    onMouseLeave={() => setHoveredAction(null)}
+                                                >
+                                                    <Trash2 size={15} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ))
+                        }
                     </div>
                 )}
             </div>
+
+            {/* ── Edit Booking Modal ─────────────────── */}
+            {editBooking && (
+                <div style={s.overlay as any} onClick={() => setEditBooking(null)}>
+                    <div style={s.modal as any} onClick={e => e.stopPropagation()}>
+                        <div style={s.modalHeader}>
+                            <h3 style={s.modalTitle}>Edit Booking: {editBooking.itemName}</h3>
+                            <button style={s.modalClose} onClick={() => setEditBooking(null)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div style={{ display: "flex", gap: 12 }}>
+                            <div style={{ ...s.formGroup, flex: 1 }}>
+                                <label style={s.formLabel}>Date</label>
+                                <input type="date" style={s.formInput} value={ebDate} onChange={e => setEbDate(e.target.value)} />
+                            </div>
+                            <div style={{ ...s.formGroup, flex: 1 }}>
+                                <label style={s.formLabel}>Time</label>
+                                <input type="time" style={s.formInput} value={ebTime} onChange={e => setEbTime(e.target.value)} />
+                            </div>
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Meeting Place</label>
+                            <input style={s.formInput} value={ebPlace} onChange={e => setEbPlace(e.target.value)} />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>User Phone</label>
+                            <input style={s.formInput} value={ebPhone} onChange={e => setEbPhone(e.target.value)} />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Status</label>
+                            <select style={{ ...s.formInput, cursor: "pointer" }} value={ebStatus}
+                                onChange={e => setEbStatus(e.target.value)}>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <button style={s.saveBtn} onClick={handleSaveBookingEdit}>
+                            Save Booking Changes
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* ── View Detail Modal ──────────────────── */}
             {viewItem && (
@@ -701,8 +1059,104 @@ export default function AdminLostFound() {
                                 <option value="claimed">Claimed</option>
                             </select>
                         </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Tags</label>
+                            <input style={s.formInput} value={editTags} onChange={e => setEditTags(e.target.value)} placeholder="phone, blue, wallet" />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Item Photo</label>
+                            <input
+                                type="file" accept="image/*" hidden id="edit-img-input"
+                                onChange={(e) => handleImageChange(e, true)}
+                            />
+                            {!editImage ? (
+                                <div style={s.uploadArea} onClick={() => document.getElementById("edit-img-input")?.click()}>
+                                    <Upload size={20} color="#94a3b8" />
+                                    <span style={{ fontSize: "0.75rem", color: "#64748b" }}>Add photo</span>
+                                </div>
+                            ) : (
+                                <div style={s.uploadPreview}>
+                                    <img src={editImage} alt="Preview" style={s.uploadPreviewImg} />
+                                    <button style={s.uploadRemove} onClick={() => setEditImage("")}>
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                         <button style={s.saveBtn} onClick={handleSaveEdit}>
                             Save Changes
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Report Modal ────────────────────────── */}
+            {showReportModal && (
+                <div style={s.overlay as any} onClick={() => setShowReportModal(false)}>
+                    <div style={s.modal as any} onClick={e => e.stopPropagation()}>
+                        <div style={s.modalHeader}>
+                            <h3 style={s.modalTitle}>Post {reportType === "lost" ? "Lost" : "Found"} Item</h3>
+                            <button style={s.modalClose} onClick={() => setShowReportModal(false)}>
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Item Name</label>
+                            <input style={s.formInput} placeholder="What was lost/found?" value={formItemName} onChange={e => setFormItemName(e.target.value)} />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Description</label>
+                            <textarea style={s.formTextarea as any} placeholder="Add details (color, brand, etc.)" value={formDesc} onChange={e => setFormDesc(e.target.value)} />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Location</label>
+                            <input style={s.formInput} placeholder="Where was it lost/found?" value={formLocation} onChange={e => setFormLocation(e.target.value)} />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Category</label>
+                            <select style={s.formInput} value={formCategory} onChange={e => setFormCategory(e.target.value)}>
+                                <option value="">Select Category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Documents">Documents</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Books">Books</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Tags</label>
+                            <input style={s.formInput} placeholder="phone, blue, wallet (comma separated)" value={formTags} onChange={e => setFormTags(e.target.value)} />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.formLabel}>Identification Photo</label>
+                            <input
+                                type="file" accept="image/*" hidden ref={fileInputRef}
+                                onChange={(e) => handleImageChange(e, false)}
+                            />
+                            {!formImage ? (
+                                <div style={s.uploadArea} onClick={() => fileInputRef.current?.click()}>
+                                    <Upload size={24} color="#94a3b8" />
+                                    <span style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>Click to upload photo</span>
+                                </div>
+                            ) : (
+                                <div style={s.uploadPreview}>
+                                    <img src={formImage} alt="Preview" style={s.uploadPreviewImg} />
+                                    <button style={s.uploadRemove} onClick={() => setFormImage("")}>
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <button
+                            style={{
+                                ...s.saveBtn,
+                                background: reportType === "lost" ? "#ef4444" : "#059669",
+                                boxShadow: reportType === "lost" ? "0 4px 14px rgba(239, 68, 68, 0.3)" : "0 4px 14px rgba(5, 150, 105, 0.3)",
+                            }}
+                            onClick={handleReportSubmit}
+                        >
+                            Submit Report
                         </button>
                     </div>
                 </div>

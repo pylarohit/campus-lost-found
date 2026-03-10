@@ -25,10 +25,8 @@ const navItems: NavItem[] = [
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} />, path: "/admin-dashboard" },
     { id: "lost-found", label: "Lost & Found", icon: <PackageOpen size={20} />, path: "/admin-posts" },
     { id: "verification", label: "Verification", icon: <Flag size={20} />, path: "/admin-users" },
-    { id: "users", label: "All Users", icon: <Users size={20} />, path: "/admin-users" },
     { id: "support-chat", label: "Support Chat", icon: <MessageCircle size={20} />, path: "/admin-chat" },
     { id: "reports", label: "Message Reports", icon: <ShieldAlert size={20} />, path: "/admin-reports" },
-    { id: "settings", label: "Settings", icon: <Settings size={20} />, path: "/admin-settings" },
 ];
 
 
