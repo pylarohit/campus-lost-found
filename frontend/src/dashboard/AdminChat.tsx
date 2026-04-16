@@ -348,7 +348,7 @@ function groupByDate(messages: Message[]): { date: string; msgs: Message[] }[] {
 // ── Component ────────────────────────────────
 
 export default function AdminChat() {
-    const adminEmail = localStorage.getItem("adminEmail") || "";
+    const adminEmail = sessionStorage.getItem("adminEmail") || "";
     const [rooms, setRooms] = useState<ChatRoom[]>([]);
     const [activeRoom, setActiveRoom] = useState<ChatRoom | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);

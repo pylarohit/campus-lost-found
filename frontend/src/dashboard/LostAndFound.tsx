@@ -448,7 +448,7 @@ export default function LostAndFound() {
         time: "10:00",
         place: "",
         phone: "",
-        email: localStorage.getItem("userEmail") || "",
+        email: sessionStorage.getItem("userEmail") || "",
     });
 
     // Fetch data
@@ -502,6 +502,7 @@ export default function LostAndFound() {
             const booking = {
                 resourceId: bookingItem.id,
                 userEmail: bookingForm.email,
+                ownerEmail: getItemOwner(bookingItem),
                 itemName: bookingItem.itemName,
                 place: bookingForm.place,
                 phone: bookingForm.phone,

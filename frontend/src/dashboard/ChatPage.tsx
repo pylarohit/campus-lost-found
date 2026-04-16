@@ -43,7 +43,7 @@ interface Message {
     content: string;
     messageType: string;
     sentAt: string;
-    read: boolean;
+    isRead: boolean;
 }
 
 // ── Styles ───────────────────────────────────
@@ -436,8 +436,8 @@ function getUnreadCount(room: ChatRoom, myEmail: string): number {
 // ── Component ────────────────────────────────
 
 export default function ChatPage() {
-    // We lock the email for this tab to prevent "shifting" if user logs into another account in another tab
-    const initialEmail = useRef(localStorage.getItem("userEmail") || "");
+    // We use sessionStorage to allow multiple tabs with different users
+    const initialEmail = useRef(sessionStorage.getItem("userEmail") || "");
     const myEmail = initialEmail.current;
 
     const location = useLocation();
@@ -750,7 +750,7 @@ export default function ChatPage() {
                                                         <div>{msg.content}</div>
                                                         <div style={{ ...s.msgTime, color: isMe ? "rgba(255,255,255,0.7)" : "#94a3b8" }}>
                                                             {formatMsgTime(msg.sentAt)}
-                                                            {isMe && (msg.read ? <CheckCheck size={12} style={{ marginLeft: 4, display: "inline" }} /> : <Check size={12} style={{ marginLeft: 4, display: "inline" }} />)}
+                                                            {isMe && (msg.isRead ? <CheckCheck size={12} style={{ marginLeft: 4, display: "inline" }} /> : <Check size={12} style={{ marginLeft: 4, display: "inline" }} />)}
                                                         </div>
                                                     </div>
                                                 </div>

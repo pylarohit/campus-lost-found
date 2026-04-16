@@ -208,8 +208,13 @@ function fuzzyScore(query: string, target: string): number {
 
 export default function TopHeader({ onToggleSidebar }: TopHeaderProps) {
     const navigate = useNavigate();
-    const userEmail = localStorage.getItem("userEmail") || "user@campus.edu";
-    const userName = userEmail.split("@")[0];
+
+    const role = sessionStorage.getItem("role");
+    const userEmail = sessionStorage.getItem("userEmail") || "";
+    const adminEmail = sessionStorage.getItem("adminEmail") || "";
+
+    const displayEmail = role === "admin" ? adminEmail : (userEmail || "user@campus.edu");
+    const userName = displayEmail.split("@")[0];
     const initials = userName
         .split(/[._-]/)
         .map((seg) => seg[0]?.toUpperCase())

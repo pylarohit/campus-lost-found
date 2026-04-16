@@ -28,7 +28,14 @@ public class BookingController {
 
     @GetMapping("/user/{email}")
     public List<Booking> getUserBookings(@PathVariable String email) {
-        return bookingRepository.findByUserEmail(email);
+        // Return bookings where user is either the requester or the item owner
+        List<Booking> asUser = bookingRepository.findByUserEmail(email);
+        List<Booking> asOwner = bookingRepository.findByOwnerEmail(email);
+        
+        java.util.Set<Booking> all = new java.util.HashSet<>(asUser);
+        all.addAll(asOwner);
+        
+        return all.stream().toList();
     }
 
     @PutMapping("/{id}")

@@ -218,8 +218,8 @@ export default function AdminSidebar({ isOpen }: AdminSidebarProps) {
     const [hoveredLogout, setHoveredLogout] = useState(false);
     const [hoveredUser, setHoveredUser] = useState(false);
 
-    const adminEmail = localStorage.getItem("adminEmail") || "";
-    if (!adminEmail && localStorage.getItem("role") === "admin") {
+    const adminEmail = sessionStorage.getItem("adminEmail") || "";
+    if (!adminEmail && sessionStorage.getItem("role") === "admin") {
         navigate("/admin-login");
     }
     const displayEmail = adminEmail || "admin@campus.edu";
@@ -231,7 +231,7 @@ export default function AdminSidebar({ isOpen }: AdminSidebarProps) {
         .slice(0, 2);
 
     const handleLogout = () => {
-        localStorage.clear();
+        sessionStorage.clear();
         navigate("/admin-login");
     };
 

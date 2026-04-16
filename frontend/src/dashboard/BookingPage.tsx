@@ -22,6 +22,7 @@ interface BookingData {
     id: number;
     resourceId: number;
     userEmail: string;
+    ownerEmail: string;
     itemName: string;
     place: string;
     phone: string;
@@ -155,7 +156,7 @@ export default function BookingPage() {
     const [editForm, setEditForm] = useState({ date: "", time: "", place: "", phone: "", email: "" });
     const [editSuccess, setEditSuccess] = useState(false);
 
-    const userEmail = localStorage.getItem("userEmail") || "";
+    const userEmail = sessionStorage.getItem("userEmail") || "";
 
     useEffect(() => {
         fetchBookings();
@@ -326,24 +327,31 @@ export default function BookingPage() {
                                                 </span>
                                                 <span style={s.cardMeta}>
                                                     <Mail size={13} />
-                                                    {b.userEmail}
+                                                    {b.userEmail === userEmail ? `To: ${b.ownerEmail}` : `From: ${b.userEmail}`}
                                                 </span>
                                             </div>
                                         </div>
                                         <div style={s.cardActions as any}>
+                                            {b.ownerEmail === userEmail && b.status === "confirmed" && (
+                                                <span style={{ fontSize: "0.72rem", color: "#3b82f6", fontWeight: 700, background: "rgba(59,130,246,0.1)", padding: "4px 8px", borderRadius: 6 }}>
+                                                    Incoming Request
+                                                </span>
+                                            )}
                                             <span style={{ ...s.statusBadge, ...getStatusStyle(b.status) }}>
                                                 {b.status}
                                             </span>
                                             {b.status === "confirmed" && (
                                                 <>
-                                                    <button
-                                                        style={s.actionBtn}
-                                                        onClick={() => openEdit(b)}
-                                                        onMouseEnter={e => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.color = "#4f46e5"; }}
-                                                        onMouseLeave={e => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.color = "#475569"; }}
-                                                    >
-                                                        <Edit3 size={14} /> Edit
-                                                    </button>
+                                                    {b.userEmail === userEmail && (
+                                                        <button
+                                                            style={s.actionBtn}
+                                                            onClick={() => openEdit(b)}
+                                                            onMouseEnter={e => { e.currentTarget.style.borderColor = "#6366f1"; e.currentTarget.style.color = "#4f46e5"; }}
+                                                            onMouseLeave={e => { e.currentTarget.style.borderColor = "#e2e8f0"; e.currentTarget.style.color = "#475569"; }}
+                                                        >
+                                                            <Edit3 size={14} /> Edit
+                                                        </button>
+                                                    )}
                                                     <button
                                                         style={s.successBtn}
                                                         onClick={() => markSuccessful(b.id)}

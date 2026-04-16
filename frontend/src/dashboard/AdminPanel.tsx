@@ -222,7 +222,7 @@ export default function AdminPanel() {
     const [searchFocused, setSearchFocused] = useState(false);
 
     useEffect(() => {
-        const role = localStorage.getItem("role");
+        const role = sessionStorage.getItem("role");
         if (role !== "admin") navigate("/admin-login");
     }, [navigate]);
 

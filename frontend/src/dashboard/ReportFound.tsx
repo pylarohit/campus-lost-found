@@ -369,7 +369,7 @@ export default function ReportFound() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const userEmail = localStorage.getItem("userEmail") || "anonymous";
+    const userEmail = sessionStorage.getItem("userEmail") || localStorage.getItem("userEmail") || "anonymous";
 
     const fetchItems = async () => {
         setLoading(true);

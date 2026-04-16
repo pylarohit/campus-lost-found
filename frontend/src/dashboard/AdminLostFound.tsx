@@ -333,7 +333,7 @@ export default function AdminLostFound() {
     const [ebStatus, setEbStatus] = useState("");
 
     useEffect(() => {
-        const role = localStorage.getItem("role");
+        const role = sessionStorage.getItem("role");
         if (role !== "admin") navigate("/admin-login");
     }, [navigate]);
 
@@ -466,7 +466,7 @@ export default function AdminLostFound() {
     const handleReportSubmit = async () => {
         if (!formItemName.trim() || !formLocation.trim()) return;
         try {
-            const adminEmail = localStorage.getItem("adminEmail") || "admin@campus.edu";
+            const adminEmail = sessionStorage.getItem("adminEmail") || "admin@campus.edu";
             const res = await fetch(`http://localhost:8080/api/${reportType}/report`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -540,7 +540,7 @@ export default function AdminLostFound() {
 
     // Filter
     const filteredPosts = posts.filter(post => {
-        const adminEmail = localStorage.getItem("adminEmail") || "admin@campus.edu";
+        const adminEmail = sessionStorage.getItem("adminEmail") || "admin@campus.edu";
         const isFromAdmin = post.owner === adminEmail || post.owner === "admin@campus.edu";
 
         const matchesTab =
@@ -568,7 +568,7 @@ export default function AdminLostFound() {
     });
 
     // Stats
-    const adminEmail = localStorage.getItem("adminEmail") || "admin@campus.edu";
+    const adminEmail = sessionStorage.getItem("adminEmail") || "admin@campus.edu";
     const totalLost = posts.filter(p => p.type === "lost").length;
     const totalFound = posts.filter(p => p.type === "found").length;
     const totalFlagged = posts.filter(p => p.flagged).length;

@@ -40,9 +40,8 @@ export function LoginForm({ variant = "user" }: LoginFormProps) {
       if (variant === "admin") {
         if (responseText === "Admin Login Success") {
           alert("Login Successful ✅");
-          localStorage.clear(); // Clear any previous user session
-          localStorage.setItem("role", "admin");
-          localStorage.setItem("adminEmail", email);
+          sessionStorage.setItem("role", "admin");
+          sessionStorage.setItem("adminEmail", email);
           navigate("/admin-dashboard");
         } else {
           alert("Invalid admin credentials ❌");
@@ -68,9 +67,8 @@ export function LoginForm({ variant = "user" }: LoginFormProps) {
 
       // USER success
       alert("Login Successful ✅");
-      localStorage.clear(); // Clear any previous admin session
-      localStorage.setItem("role", "user");
-      localStorage.setItem("userEmail", email);
+      sessionStorage.setItem("role", "user");
+      sessionStorage.setItem("userEmail", email);
       navigate("/dashboard");
 
     } catch (err) {

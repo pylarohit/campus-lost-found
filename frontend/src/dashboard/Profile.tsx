@@ -176,7 +176,7 @@ export default function Profile() {
     const [showSuccess, setShowSuccess] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const userEmail = localStorage.getItem("userEmail") || "";
+    const userEmail = sessionStorage.getItem("userEmail") || "";
 
     useEffect(() => {
         if (userEmail) {

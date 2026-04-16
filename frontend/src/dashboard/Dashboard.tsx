@@ -175,7 +175,7 @@ const s: Record<string, CSSProperties> = {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const userEmail = localStorage.getItem("userEmail") || "";
+  const userEmail = sessionStorage.getItem("userEmail") || "";
   const userName = userEmail ? userEmail.split("@")[0] : "User";
 
   const [recentItems, setRecentItems] = useState<RecentItem[]>([]);

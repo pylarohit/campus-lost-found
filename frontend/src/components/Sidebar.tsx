@@ -230,7 +230,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
     const [hoveredUser, setHoveredUser] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState<string>("");
 
-    const userEmail = localStorage.getItem("userEmail") || "";
+    const userEmail = sessionStorage.getItem("userEmail") || "";
 
     useEffect(() => {
         if (userEmail) {
@@ -245,7 +245,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         }
     }, [userEmail]);
 
-    if (!userEmail && localStorage.getItem("role") === "user") {
+    if (!userEmail && sessionStorage.getItem("role") === "user") {
         // Only redirect if we are supposed to be a user but email is missing
         navigate("/login");
     }
@@ -258,7 +258,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         .slice(0, 2);
 
     const handleLogout = () => {
-        localStorage.removeItem("userEmail");
+        sessionStorage.clear();
         navigate("/login");
     };
 

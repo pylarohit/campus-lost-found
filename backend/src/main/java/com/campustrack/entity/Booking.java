@@ -15,6 +15,7 @@ public class Booking {
     private String itemName;
     private String place;
     private String phone;
+    private String ownerEmail;
 
     private LocalDateTime startTime;
     private LocalDateTime endTime;
@@ -103,6 +104,14 @@ public class Booking {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 
     public LocalDateTime getCreatedAt() {

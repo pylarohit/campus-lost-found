@@ -404,7 +404,7 @@ export default function ReportLost() {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const userEmail = localStorage.getItem("userEmail") || "anonymous";
+    const userEmail = sessionStorage.getItem("userEmail") || localStorage.getItem("userEmail") || "anonymous";
 
     // Fetch only the current user's lost items
     const fetchItems = async () => {
