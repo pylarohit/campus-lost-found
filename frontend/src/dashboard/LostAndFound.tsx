@@ -457,8 +457,8 @@ export default function LostAndFound() {
             setLoading(true);
             try {
                 const [lostRes, foundRes] = await Promise.all([
-                    fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/lost/approved"),
-                    fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/found/approved"),
+                    fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/lost/approved"),
+                    fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/found/approved"),
                 ]);
                 if (lostRes.ok) {
                     const data = await lostRes.json();
@@ -510,7 +510,7 @@ export default function LostAndFound() {
                 endTime: `${bookingForm.date}T${bookingForm.time}:00`,
                 status: "confirmed",
             };
-            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/bookings", {
+            const res = await fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/bookings", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(booking),

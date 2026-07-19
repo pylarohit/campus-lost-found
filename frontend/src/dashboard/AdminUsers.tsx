@@ -160,7 +160,7 @@ export default function AdminUsers() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/users/all");
+            const res = await fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/admin/users/all");
             if (res.ok) setUsers(await res.json());
         } catch (err) {
             console.error("Failed to fetch users:", err);

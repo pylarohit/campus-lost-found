@@ -19,7 +19,7 @@ import {
 import SockJS from "sockjs-client";
 import { Client, IMessage } from "@stomp/stompjs";
 
-const API = (process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/chat";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/chat";
 
 // ── Types ────────────────────────────────────
 
@@ -476,7 +476,7 @@ export default function ChatPage() {
     // WebSocket connection
     useEffect(() => {
         const client = new Client({
-            webSocketFactory: () => new SockJS((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/ws"),
+            webSocketFactory: () => new SockJS((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/ws"),
             connectHeaders: {
                 email: myEmail
             },
@@ -610,7 +610,7 @@ export default function ChatPage() {
     const submitReport = async () => {
         if (!reportingMessage || !reportReason) return;
         try {
-            await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/chat/report", {
+            await fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/chat/report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

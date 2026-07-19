@@ -465,7 +465,7 @@ export default function ReportLost() {
     const handleSubmit = async () => {
         if (!itemName.trim() || !location.trim()) return;
         try {
-            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/lost/report", {
+            const res = await fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/lost/report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

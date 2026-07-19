@@ -191,8 +191,8 @@ export default function Dashboard() {
     const fetchRecentItems = async () => {
       try {
         const [lostRes, foundRes] = await Promise.all([
-          fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/lost/approved"),
-          fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/found/approved")
+          fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/lost/approved"),
+          fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/found/approved")
         ]);
 
         if (lostRes.ok && foundRes.ok) {

@@ -25,8 +25,8 @@ export function LoginForm({ variant = "user" }: LoginFormProps) {
     try {
       const url =
         variant === "admin"
-          ? (process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/login"
-          : (process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/login";
+          ? (process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/admin/login"
+          : (process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/login";
 
       const res = await fetch(url, {
         method: "POST",
@@ -91,7 +91,7 @@ export function LoginForm({ variant = "user" }: LoginFormProps) {
     }
     setLoading(true);
     try {
-      const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/register", {
+      const res = await fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),

@@ -341,8 +341,8 @@ export default function AdminLostFound() {
         setLoading(true);
         try {
             const [lostRes, foundRes] = await Promise.all([
-                fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/lost/all"),
-                fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/found/all"),
+                fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/admin/lost/all"),
+                fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/admin/found/all"),
             ]);
             const allPosts: PostItem[] = [];
             if (lostRes.ok) {
@@ -367,7 +367,7 @@ export default function AdminLostFound() {
 
     const fetchBookings = async () => {
         try {
-            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/bookings");
+            const res = await fetch((process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api/bookings");
             if (res.ok) {
                 const data = await res.json();
                 setBookings(data);
