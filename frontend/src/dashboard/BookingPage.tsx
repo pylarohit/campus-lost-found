@@ -19,8 +19,8 @@ import {
 // ── Types ───────────────────────────────────
 
 interface BookingData {
-    id: number;
-    resourceId: number;
+    id: string;
+    resourceId: string;
     userEmail: string;
     ownerEmail: string;
     itemName: string;
@@ -165,7 +165,7 @@ export default function BookingPage() {
     const fetchBookings = async () => {
         if (!userEmail) { setLoading(false); return; }
         try {
-            const res = await fetch(`http://localhost:8080/api/bookings/user/${userEmail}`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/bookings/user/${userEmail}`);
             const data = await res.json();
             setBookings(Array.isArray(data) ? data.sort((a: any, b: any) =>
                 new Date(b.createdAt || b.startTime).getTime() - new Date(a.createdAt || a.startTime).getTime()
@@ -191,7 +191,7 @@ export default function BookingPage() {
         e.preventDefault();
         if (!editBooking) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/bookings/${editBooking.id}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/bookings/${editBooking.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -210,17 +210,17 @@ export default function BookingPage() {
         } catch (e) { console.error(e); alert("Failed to update."); }
     };
 
-    const markSuccessful = async (id: number) => {
+    const markSuccessful = async (id: string) => {
         try {
-            await fetch(`http://localhost:8080/api/bookings/${id}/complete`, { method: "PUT" });
+            await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/bookings/${id}/complete`, { method: "PUT" });
             fetchBookings();
         } catch (e) { console.error(e); }
     };
 
-    const cancelBooking = async (id: number) => {
+    const cancelBooking = async (id: string) => {
         if (!window.confirm("Cancel this booking?")) return;
         try {
-            await fetch(`http://localhost:8080/api/bookings/${id}`, { method: "DELETE" });
+            await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/bookings/${id}`, { method: "DELETE" });
             fetchBookings();
         } catch (e) { console.error(e); }
     };

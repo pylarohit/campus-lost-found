@@ -1,31 +1,28 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "resource")
+@Document
 public class Resource {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String name;
-    @Column(length = 1000)
-    private String description;
+        private String description;
     private String category; // "Study Room", "Equipment", "Lab Space"
     private String location;
 
-    @Column(columnDefinition = "LONGTEXT")
-    private String imageUrl;
+        private String imageUrl;
 
     private boolean available = true;
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

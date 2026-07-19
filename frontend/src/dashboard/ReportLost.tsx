@@ -22,7 +22,7 @@ import {
 // ── Types ───────────────────────────────────
 
 interface LostItem {
-    id: number;
+    id: string;
     itemName: string;
     description: string;
     location: string;
@@ -388,7 +388,7 @@ export default function ReportLost() {
     const [showModal, setShowModal] = useState(false);
     const [viewItem, setViewItem] = useState<LostItem | null>(null);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
-    const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
     const [hoveredBannerBtn, setHoveredBannerBtn] = useState(false);
     const [hoveredReportBtn, setHoveredReportBtn] = useState(false);
     const [hoveredHistoryBtn, setHoveredHistoryBtn] = useState(false);
@@ -410,7 +410,7 @@ export default function ReportLost() {
     const fetchItems = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8080/api/lost/my?email=${encodeURIComponent(userEmail)}`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/lost/my?email=${encodeURIComponent(userEmail)}`);
             if (res.ok) {
                 const data = await res.json();
                 setItems(data);
@@ -465,7 +465,7 @@ export default function ReportLost() {
     const handleSubmit = async () => {
         if (!itemName.trim() || !location.trim()) return;
         try {
-            const res = await fetch("http://localhost:8080/api/lost/report", {
+            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/lost/report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -487,10 +487,10 @@ export default function ReportLost() {
     };
 
     // Delete
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         if (!window.confirm("Are you sure you want to delete this item?")) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/lost/${id}`, { method: "DELETE" });
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/lost/${id}`, { method: "DELETE" });
             if (res.ok) fetchItems();
             else alert("Failed to delete item.");
         } catch {

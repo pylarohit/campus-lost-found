@@ -1,42 +1,32 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "chat_room")
+@Document
 public class ChatRoom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(name = "room_id", unique = true, nullable = false)
-    private String roomId;
+        private String roomId;
 
-    @Column(name = "participant_one", nullable = false)
-    private String participantOne;
+        private String participantOne;
 
-    @Column(name = "participant_two", nullable = false)
-    private String participantTwo;
+        private String participantTwo;
 
-    @Column(name = "room_type", nullable = false)
-    private String roomType; // "USER_USER" or "USER_ADMIN"
+        private String roomType; // "USER_USER" or "USER_ADMIN"
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+        private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "last_message")
-    private String lastMessage;
+        private String lastMessage;
 
-    @Column(name = "last_message_at")
-    private LocalDateTime lastMessageAt;
+        private LocalDateTime lastMessageAt;
 
-    @Column(name = "unread_count_one")
-    private int unreadCountOne = 0;
+        private int unreadCountOne = 0;
 
-    @Column(name = "unread_count_two")
-    private int unreadCountTwo = 0;
+        private int unreadCountTwo = 0;
 
     public ChatRoom() {
     }
@@ -50,7 +40,7 @@ public class ChatRoom {
     }
 
     // Getters & Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

@@ -78,7 +78,7 @@ public class AdminController {
     }
 
     @PutMapping("/users/{id}/verify")
-    public ResponseEntity<Map<String, String>> verifyUser(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> verifyUser(@PathVariable String id) {
         User user = userRepository.findById(id).orElse(null);
         if (user == null)
             return ResponseEntity.notFound().build();
@@ -88,7 +88,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Map<String, String>> rejectUser(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> rejectUser(@PathVariable String id) {
         if (!userRepository.existsById(id))
             return ResponseEntity.notFound().build();
         userRepository.deleteById(id);
@@ -110,7 +110,7 @@ public class AdminController {
     }
 
     @PutMapping("/lost/{id}/approve")
-    public ResponseEntity<Map<String, String>> approveLostItem(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> approveLostItem(@PathVariable String id) {
         LostItem item = lostItemRepository.findById(id).orElse(null);
         if (item == null)
             return ResponseEntity.notFound().build();
@@ -123,7 +123,7 @@ public class AdminController {
 
     @PutMapping("/lost/{id}/edit")
     public ResponseEntity<Map<String, String>> editLostItem(
-            @PathVariable Long id, @RequestBody LostItem updated) {
+            @PathVariable String id, @RequestBody LostItem updated) {
         LostItem item = lostItemRepository.findById(id).orElse(null);
         if (item == null)
             return ResponseEntity.notFound().build();
@@ -144,7 +144,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/lost/{id}")
-    public ResponseEntity<Map<String, String>> deleteLostItem(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteLostItem(@PathVariable String id) {
         if (!lostItemRepository.existsById(id))
             return ResponseEntity.notFound().build();
         lostItemRepository.deleteById(id);
@@ -166,7 +166,7 @@ public class AdminController {
     }
 
     @PutMapping("/found/{id}/approve")
-    public ResponseEntity<Map<String, String>> approveFoundItem(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> approveFoundItem(@PathVariable String id) {
         FoundItem item = foundItemRepository.findById(id).orElse(null);
         if (item == null)
             return ResponseEntity.notFound().build();
@@ -179,7 +179,7 @@ public class AdminController {
 
     @PutMapping("/found/{id}/edit")
     public ResponseEntity<Map<String, String>> editFoundItem(
-            @PathVariable Long id, @RequestBody FoundItem updated) {
+            @PathVariable String id, @RequestBody FoundItem updated) {
         FoundItem item = foundItemRepository.findById(id).orElse(null);
         if (item == null)
             return ResponseEntity.notFound().build();
@@ -200,7 +200,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/found/{id}")
-    public ResponseEntity<Map<String, String>> deleteFoundItem(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteFoundItem(@PathVariable String id) {
         if (!foundItemRepository.existsById(id))
             return ResponseEntity.notFound().build();
         foundItemRepository.deleteById(id);
@@ -217,7 +217,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/messages/{messageId}")
-    public ResponseEntity<Map<String, String>> deleteReportedMessage(@PathVariable Long messageId) {
+    public ResponseEntity<Map<String, String>> deleteReportedMessage(@PathVariable String messageId) {
         if (!messageRepository.existsById(messageId))
             return ResponseEntity.notFound().build();
 
@@ -236,7 +236,7 @@ public class AdminController {
     }
 
     @PutMapping("/reports/{id}/dismiss")
-    public ResponseEntity<Map<String, String>> dismissReport(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> dismissReport(@PathVariable String id) {
         MessageReport report = reportRepository.findById(id).orElse(null);
         if (report == null)
             return ResponseEntity.notFound().build();

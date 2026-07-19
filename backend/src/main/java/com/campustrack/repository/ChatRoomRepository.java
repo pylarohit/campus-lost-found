@@ -1,23 +1,22 @@
 package com.campustrack.repository;
 
 import com.campustrack.entity.ChatRoom;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
+public interface ChatRoomRepository extends MongoRepository<ChatRoom, String> {
 
     Optional<ChatRoom> findByRoomId(String roomId);
 
-    @Query("SELECT r FROM ChatRoom r WHERE r.participantOne = :email OR r.participantTwo = :email ORDER BY r.lastMessageAt DESC")
-    List<ChatRoom> findByParticipant(@Param("email") String email);
+    @Query(value = "{ '$or': [ { 'participantOne': ?0 }, { 'participantTwo': ?0 } ] }", sort = "{ 'lastMessageAt': -1 }")
+    List<ChatRoom> findByParticipant(String email);
 
-    @Query("SELECT r FROM ChatRoom r WHERE r.roomType = :roomType AND (r.participantOne = :email OR r.participantTwo = :email)")
-    List<ChatRoom> findByParticipantAndRoomType(@Param("email") String email, @Param("roomType") String roomType);
+    @Query("{ 'roomType': ?1, '$or': [ { 'participantOne': ?0 }, { 'participantTwo': ?0 } ] }")
+    List<ChatRoom> findByParticipantAndRoomType(String email, String roomType);
 
-    @Query("SELECT r FROM ChatRoom r WHERE r.roomType = 'USER_ADMIN' ORDER BY r.lastMessageAt DESC")
+    @Query(value = "{ 'roomType': 'USER_ADMIN' }", sort = "{ 'lastMessageAt': -1 }")
     List<ChatRoom> findAllAdminRooms();
 }

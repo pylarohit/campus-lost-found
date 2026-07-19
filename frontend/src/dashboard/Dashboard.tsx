@@ -20,7 +20,7 @@ interface CardConfig {
 }
 
 interface RecentItem {
-  id: number;
+  id: string;
   itemName: string;
   category: string;
   location: string;
@@ -179,7 +179,7 @@ export default function Dashboard() {
   const userName = userEmail ? userEmail.split("@")[0] : "User";
 
   const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
-  const [hoveredRecent, setHoveredRecent] = useState<number | null>(null);
+  const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -191,8 +191,8 @@ export default function Dashboard() {
     const fetchRecentItems = async () => {
       try {
         const [lostRes, foundRes] = await Promise.all([
-          fetch("http://localhost:8080/api/lost/approved"),
-          fetch("http://localhost:8080/api/found/approved")
+          fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/lost/approved"),
+          fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/found/approved")
         ]);
 
         if (lostRes.ok && foundRes.ok) {

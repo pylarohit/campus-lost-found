@@ -1,45 +1,35 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "message_report")
+@Document
 public class MessageReport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
+        private String messageId;
 
-    @Column(name = "message_id", nullable = false)
-    private Long messageId;
+        private String reporterEmail;
 
-    @Column(name = "reporter_email", nullable = false)
-    private String reporterEmail;
+        private String reason;
 
-    @Column(name = "reason", nullable = false)
-    private String reason;
+        private String detail;
 
-    @Column(columnDefinition = "TEXT")
-    private String detail;
+        private String status = "PENDING"; // PENDING, RESOLVED, DISMISSED
 
-    @Column(name = "status")
-    private String status = "PENDING"; // PENDING, RESOLVED, DISMISSED
-
-    @Column(name = "reported_at")
-    private LocalDateTime reportedAt = LocalDateTime.now();
+        private LocalDateTime reportedAt = LocalDateTime.now();
 
     // To store context for the admin (content of the reported message)
-    @Column(columnDefinition = "TEXT")
-    private String messageContent;
+        private String messageContent;
 
-    @Column(name = "sender_email")
-    private String senderEmail;
+        private String senderEmail;
 
     public MessageReport() {
     }
 
-    public MessageReport(Long messageId, String reporterEmail, String reason, String messageContent,
+    public MessageReport(String messageId, String reporterEmail, String reason, String messageContent,
             String senderEmail) {
         this.messageId = messageId;
         this.reporterEmail = reporterEmail;
@@ -50,19 +40,19 @@ public class MessageReport {
     }
 
     // Getters & Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(Long messageId) {
+    public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 

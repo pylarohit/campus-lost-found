@@ -1,38 +1,31 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "user")
+@Document
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+        private String email;
 
-    @Column(nullable = false)
-    private String password;
+        private String password;
 
     private String name;
     private String phoneNumber;
 
-    @Column(unique = true)
-    private String regNo;
+        private String regNo;
 
     private String course;
 
-    @Column(length = 1000)
-    private String address;
+        private String address;
 
-    @Column(length = 1000)
-    private String profilePhoto;
+        private String profilePhoto;
 
-    @Column(nullable = false)
-    private boolean verified = false;
+        private boolean verified = false;
 
     private boolean online = false;
     private LocalDateTime lastSeen;
@@ -48,7 +41,7 @@ public class User {
     }
 
     // Getters & Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

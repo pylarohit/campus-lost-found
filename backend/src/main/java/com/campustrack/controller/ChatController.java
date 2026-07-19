@@ -128,7 +128,9 @@ public class ChatController {
         String roomId = body.get("roomId");
         String email = body.get("email");
 
-        messageRepository.markAsRead(roomId, email);
+        List<ChatMessage> unread = messageRepository.findUnreadMessages(roomId, email);
+        for(ChatMessage m : unread) { m.setRead(true); }
+        messageRepository.saveAll(unread);
 
         // Reset unread count for this user
         roomRepository.findByRoomId(roomId).ifPresent(room -> {
@@ -152,7 +154,7 @@ public class ChatController {
     // ── REST: Report Inappropriate Message ────────────
     @PostMapping("/report")
     public ResponseEntity<?> reportMessage(@RequestBody Map<String, String> body) {
-        Long messageId = Long.parseLong(body.get("messageId"));
+        String messageId = body.get("messageId");
         String reporterEmail = body.get("reporterEmail");
         String reason = body.get("reason");
         String detail = body.get("detail");

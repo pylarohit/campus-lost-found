@@ -1,19 +1,19 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document
 public class Admin {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String email;
     private String password;
 
     // getters & setters
-    public Long getId() { return id; }
+    public String getId() { return id; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

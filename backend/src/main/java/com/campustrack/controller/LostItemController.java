@@ -44,7 +44,7 @@ public class LostItemController {
     // 📌 FLAG A LOST ITEM
     @PutMapping("/{id}/flag")
     public ResponseEntity<Map<String, String>> flagItem(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody Map<String, String> body) {
         LostItem item = repository.findById(id).orElse(null);
         if (item == null)
@@ -59,7 +59,7 @@ public class LostItemController {
     // 📌 UPDATE LOST ITEM STATUS
     @PutMapping("/{id}/status")
     public ResponseEntity<Map<String, String>> updateStatus(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody Map<String, String> body) {
         LostItem item = repository.findById(id).orElse(null);
         if (item == null)
@@ -76,7 +76,7 @@ public class LostItemController {
 
     // 📌 DELETE LOST ITEM
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLostItem(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLostItem(@PathVariable String id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return ResponseEntity.ok().build();

@@ -234,11 +234,11 @@ export default function Sidebar({ isOpen }: SidebarProps) {
 
     useEffect(() => {
         if (userEmail) {
-            fetch(`http://localhost:8080/api/profile/${userEmail}`)
+            fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/profile/${userEmail}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.profilePhoto) {
-                        setProfilePhoto(`http://localhost:8080${data.profilePhoto}`);
+                        setProfilePhoto(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${data.profilePhoto}`);
                     }
                 })
                 .catch(err => console.error("Error fetching profile photo:", err));

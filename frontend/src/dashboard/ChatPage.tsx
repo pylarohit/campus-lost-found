@@ -19,12 +19,12 @@ import {
 import SockJS from "sockjs-client";
 import { Client, IMessage } from "@stomp/stompjs";
 
-const API = "http://localhost:8080/api/chat";
+const API = (process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/chat";
 
 // ── Types ────────────────────────────────────
 
 interface ChatRoom {
-    id: number;
+    id: string;
     roomId: string;
     participantOne: string;
     participantTwo: string;
@@ -36,7 +36,7 @@ interface ChatRoom {
 }
 
 interface Message {
-    id: number;
+    id: string;
     roomId: string;
     senderEmail: string;
     senderName: string;
@@ -476,7 +476,7 @@ export default function ChatPage() {
     // WebSocket connection
     useEffect(() => {
         const client = new Client({
-            webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+            webSocketFactory: () => new SockJS((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/ws"),
             connectHeaders: {
                 email: myEmail
             },
@@ -510,7 +510,7 @@ export default function ChatPage() {
         const other = getOtherParticipant(activeRoom, myEmail);
         if (!other) return;
 
-        fetch(`http://localhost:8080/api/profile/${other}`)
+        fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/profile/${other}`)
             .then(r => r.json())
             .then(data => setOtherUserStatus({ online: data.online, lastSeen: data.lastSeen }))
             .catch(console.error);
@@ -610,7 +610,7 @@ export default function ChatPage() {
     const submitReport = async () => {
         if (!reportingMessage || !reportReason) return;
         try {
-            await fetch("http://localhost:8080/api/chat/report", {
+            await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/chat/report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

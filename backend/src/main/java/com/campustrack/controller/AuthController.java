@@ -78,4 +78,25 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of("status", "REGISTERED"));
     }
+
+    // 📌 SEED DATABASE — creates default admin and user
+    @GetMapping("/seed")
+    public String seed() {
+        if (adminRepository.findByEmail("admin@campustrack.com").isEmpty()) {
+            Admin admin = new Admin();
+            admin.setEmail("admin@campustrack.com");
+            admin.setPassword("admin123");
+            adminRepository.save(admin);
+        }
+        if (userRepository.findByEmail("user@campustrack.com").isEmpty()) {
+            User user = new User();
+            user.setEmail("user@campustrack.com");
+            user.setPassword("user123");
+            user.setName("Demo User");
+            user.setRegNo("DEMO123");
+            user.setVerified(true);
+            userRepository.save(user);
+        }
+        return "Database Seeded! Admin: admin@campustrack.com / admin123 | User: user@campustrack.com / user123";
+    }
 }

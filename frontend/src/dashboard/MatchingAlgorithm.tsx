@@ -16,7 +16,7 @@ import {
 // ── Types ────────────────────────────────────
 
 interface LostItem {
-    id: number;
+    id: string;
     itemName: string;
     description: string;
     location: string;
@@ -26,7 +26,7 @@ interface LostItem {
 }
 
 interface FoundItem {
-    id: number;
+    id: string;
     itemName: string;
     description: string;
     location: string;
@@ -216,8 +216,8 @@ export default function MatchingAlgorithm() {
         const fetchData = async () => {
             try {
                 const [lRes, fRes] = await Promise.all([
-                    fetch("http://localhost:8080/api/lost/approved"),
-                    fetch("http://localhost:8080/api/found/approved")
+                    fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/lost/approved"),
+                    fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/found/approved")
                 ]);
                 if (lRes.ok) setLostItems(await lRes.json());
                 if (fRes.ok) setFoundItems(await fRes.json());

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 interface UserItem {
-    id: number;
+    id: string;
     name: string;
     email: string;
     verified: boolean;
@@ -160,7 +160,7 @@ export default function AdminUsers() {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:8080/api/admin/users/all");
+            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/users/all");
             if (res.ok) setUsers(await res.json());
         } catch (err) {
             console.error("Failed to fetch users:", err);
@@ -171,19 +171,19 @@ export default function AdminUsers() {
 
     useEffect(() => { fetchUsers(); }, []);
 
-    const handleVerify = async (id: number) => {
+    const handleVerify = async (id: string) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/admin/users/${id}/verify`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/users/${id}/verify`, {
                 method: "PUT",
             });
             if (res.ok) fetchUsers();
         } catch { alert("Error verifying user."); }
     };
 
-    const handleReject = async (id: number) => {
+    const handleReject = async (id: string) => {
         if (!window.confirm("Are you sure you want to reject and delete this user?")) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/admin/users/${id}`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/users/${id}`, {
                 method: "DELETE",
             });
             if (res.ok) fetchUsers();

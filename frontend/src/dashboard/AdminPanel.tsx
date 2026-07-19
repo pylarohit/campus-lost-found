@@ -14,7 +14,7 @@ import {
 // ── Post interface ──────────────────────────
 
 interface PostItem {
-    id: number;
+    id: string;
     title: string;
     postedBy: string;
     date: string;
@@ -25,14 +25,14 @@ interface PostItem {
 // ── Mock data ───────────────────────────────
 
 const allPosts: PostItem[] = [
-    { id: 1, title: "Lost textbook", postedBy: "Alex Chen", date: "Feb 22", status: "active", thumbnail: "📘" },
-    { id: 2, title: "Selling bike", postedBy: "Sarah Lee", date: "Feb 21", status: "flagged", thumbnail: "🚲" },
-    { id: 3, title: "Looking for roommate", postedBy: "David Kim", date: "Feb 20", status: "active", thumbnail: "🏠" },
-    { id: 4, title: "Lost wallet (brown)", postedBy: "Emily Park", date: "Feb 19", status: "pending", thumbnail: "👛" },
-    { id: 5, title: "Found AirPods Pro", postedBy: "James Wu", date: "Feb 18", status: "active", thumbnail: "🎧" },
-    { id: 6, title: "Missing calculator", postedBy: "Lisa Zhao", date: "Feb 17", status: "flagged", thumbnail: "🧮" },
-    { id: 7, title: "Lost campus ID card", postedBy: "Ryan Patel", date: "Feb 16", status: "active", thumbnail: "🪪" },
-    { id: 8, title: "Spam listing", postedBy: "Unknown", date: "Feb 15", status: "flagged", thumbnail: "⚠️" },
+    { id: "1", title: "Lost textbook", postedBy: "Alex Chen", date: "Feb 22", status: "active", thumbnail: "📘" },
+    { id: "2", title: "Selling bike", postedBy: "Sarah Lee", date: "Feb 21", status: "flagged", thumbnail: "🚲" },
+    { id: "3", title: "Looking for roommate", postedBy: "David Kim", date: "Feb 20", status: "active", thumbnail: "🏠" },
+    { id: "4", title: "Lost wallet (brown)", postedBy: "Emily Park", date: "Feb 19", status: "pending", thumbnail: "👛" },
+    { id: "5", title: "Found AirPods Pro", postedBy: "James Wu", date: "Feb 18", status: "active", thumbnail: "🎧" },
+    { id: "6", title: "Missing calculator", postedBy: "Lisa Zhao", date: "Feb 17", status: "flagged", thumbnail: "🧮" },
+    { id: "7", title: "Lost campus ID card", postedBy: "Ryan Patel", date: "Feb 16", status: "active", thumbnail: "🪪" },
+    { id: "8", title: "Spam listing", postedBy: "Unknown", date: "Feb 15", status: "flagged", thumbnail: "⚠️" },
 ];
 
 // ── Styles ──────────────────────────────────
@@ -217,7 +217,7 @@ export default function AdminPanel() {
         isFlaggedRoute ? "flagged" : "posts"
     );
     const [searchQuery, setSearchQuery] = useState("");
-    const [hoveredPost, setHoveredPost] = useState<number | null>(null);
+    const [hoveredPost, setHoveredPost] = useState<string | null>(null);
     const [hoveredAction, setHoveredAction] = useState<string | null>(null);
     const [searchFocused, setSearchFocused] = useState(false);
 

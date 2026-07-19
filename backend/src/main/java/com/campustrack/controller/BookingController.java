@@ -39,7 +39,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    public Booking updateBooking(@PathVariable Long id, @RequestBody Booking updated) {
+    public Booking updateBooking(@PathVariable String id, @RequestBody Booking updated) {
         Optional<Booking> existing = bookingRepository.findById(id);
         if (existing.isPresent()) {
             Booking b = existing.get();
@@ -63,7 +63,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}/complete")
-    public Booking markComplete(@PathVariable Long id) {
+    public Booking markComplete(@PathVariable String id) {
         Optional<Booking> existing = bookingRepository.findById(id);
         if (existing.isPresent()) {
             Booking b = existing.get();
@@ -74,7 +74,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    public void cancelBooking(@PathVariable Long id) {
+    public void cancelBooking(@PathVariable String id) {
         bookingRepository.deleteById(id);
     }
 }

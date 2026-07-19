@@ -44,7 +44,7 @@ public class FoundItemController {
     // 📌 FLAG AN ITEM
     @PutMapping("/{id}/flag")
     public ResponseEntity<Map<String, String>> flagItem(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody Map<String, String> body) {
         FoundItem item = repository.findById(id).orElse(null);
         if (item == null)
@@ -58,7 +58,7 @@ public class FoundItemController {
 
     // 📌 DELETE FOUND ITEM
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFoundItem(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFoundItem(@PathVariable String id) {
         if (repository.existsById(id)) {
             repository.deleteById(id);
             return ResponseEntity.ok().build();

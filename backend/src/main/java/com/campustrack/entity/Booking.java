@@ -1,16 +1,15 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "booking")
+@Document
 public class Booking {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    private Long resourceId;
+    private String resourceId;
     private String userEmail;
     private String itemName;
     private String place;
@@ -20,12 +19,11 @@ public class Booking {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    @Column(length = 50)
-    private String status; // "confirmed", "completed", "cancelled"
+        private String status; // "confirmed", "completed", "cancelled"
 
     private LocalDateTime createdAt;
 
-    @PrePersist
+    
     protected void onCreate() {
         if (createdAt == null)
             createdAt = LocalDateTime.now();
@@ -34,19 +32,19 @@ public class Booking {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getResourceId() {
+    public String getResourceId() {
         return resourceId;
     }
 
-    public void setResourceId(Long resourceId) {
+    public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
 

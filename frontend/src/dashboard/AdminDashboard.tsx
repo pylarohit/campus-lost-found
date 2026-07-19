@@ -300,12 +300,12 @@ export default function AdminDashboard() {
       return;
     }
     // Fetch real stats from backend
-    fetch("http://localhost:8080/api/admin/stats")
+    fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/stats")
       .then(res => res.json())
       .then(data => setStats(data))
       .catch(err => console.error("Failed to fetch stats:", err));
     // Fetch weekly activity
-    fetch("http://localhost:8080/api/admin/activity")
+    fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/activity")
       .then(res => res.json())
       .then(data => setActivity(data))
       .catch(err => console.error("Failed to fetch activity:", err));

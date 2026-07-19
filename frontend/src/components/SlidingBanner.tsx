@@ -2,7 +2,7 @@ import React, { useState, useEffect, CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
 
 interface SlideData {
-    id: number;
+    id: string;
     title: string;
     description: string;
     blobGradient: string;
@@ -14,7 +14,7 @@ interface SlideData {
 
 const slides: SlideData[] = [
     {
-        id: 1,
+        id: "1",
         title: "Track & Recover Your Lost Items",
         description:
             "Report lost belongings and help fellow students recover their items across campus.",
@@ -25,7 +25,7 @@ const slides: SlideData[] = [
         image: "/campusfound.png",
     },
     {
-        id: 2,
+        id: "2",
         title: "Connect With Campus Community",
         description:
             "Join a network of students helping each other find their belongings every day.",
@@ -36,7 +36,7 @@ const slides: SlideData[] = [
         image: "/campusfound2.png",
     },
     {
-        id: 3,
+        id: "3",
         title: "Book & Claim Found Items",
         description:
             "Reserve found items online and pick them up at your convenience from the campus desk.",
@@ -47,7 +47,7 @@ const slides: SlideData[] = [
         image: "/lost.png",
     },
     {
-        id: 4,
+        id: "4",
         title: "Smart Search & Matching",
         description:
             "Our intelligent matching system automatically connects lost reports with found items.",

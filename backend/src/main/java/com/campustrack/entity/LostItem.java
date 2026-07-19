@@ -1,40 +1,35 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "lost_item")
+@Document
 public class LostItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String itemName;
 
-    @Column(length = 2000)
-    private String description;
+        private String description;
 
     private String location;
     private String reportedBy;
     private String category;
     private String tags;
 
-    @Column(length = 50)
-    private String status; // "active", "recovered", "flagged", "pending"
+        private String status; // "active", "recovered", "flagged", "pending"
 
     private boolean flagged;
 
-    @Column(length = 500)
-    private String flagReason;
+        private String flagReason;
 
-    @Column(columnDefinition = "LONGTEXT")
-    private String imageUrl;
+        private String imageUrl;
 
     private LocalDateTime createdAt;
 
-    @PrePersist
+    
     protected void onCreate() {
         if (createdAt == null)
             createdAt = LocalDateTime.now();
@@ -43,7 +38,7 @@ public class LostItem {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

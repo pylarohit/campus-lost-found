@@ -1,11 +1,11 @@
 package com.campustrack.repository;
 
 import com.campustrack.entity.FoundItem;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface FoundItemRepository extends JpaRepository<FoundItem, Long> {
+public interface FoundItemRepository extends MongoRepository<FoundItem, String> {
     List<FoundItem> findByFoundBy(String foundBy);
 
     List<FoundItem> findByFlaggedTrue();

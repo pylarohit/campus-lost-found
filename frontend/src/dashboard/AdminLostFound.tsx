@@ -27,7 +27,7 @@ import {
 // ── Types ───────────────────────────────────
 
 interface PostItem {
-    id: number;
+    id: string;
     itemName: string;
     description: string;
     location: string;
@@ -43,8 +43,8 @@ interface PostItem {
 }
 
 interface BookingItem {
-    id: number;
-    resourceId: number;
+    id: string;
+    resourceId: string;
     userEmail: string;
     itemName: string;
     place: string;
@@ -341,8 +341,8 @@ export default function AdminLostFound() {
         setLoading(true);
         try {
             const [lostRes, foundRes] = await Promise.all([
-                fetch("http://localhost:8080/api/admin/lost/all"),
-                fetch("http://localhost:8080/api/admin/found/all"),
+                fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/lost/all"),
+                fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/admin/found/all"),
             ]);
             const allPosts: PostItem[] = [];
             if (lostRes.ok) {
@@ -367,7 +367,7 @@ export default function AdminLostFound() {
 
     const fetchBookings = async () => {
         try {
-            const res = await fetch("http://localhost:8080/api/bookings");
+            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/bookings");
             if (res.ok) {
                 const data = await res.json();
                 setBookings(data);
@@ -421,7 +421,7 @@ export default function AdminLostFound() {
     // Actions
     const handleApprove = async (item: PostItem) => {
         try {
-            await fetch(`http://localhost:8080/api/admin/${item.type}/${item.id}/approve`, { method: "PUT" });
+            await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/${item.type}/${item.id}/approve`, { method: "PUT" });
             fetchPosts();
         } catch { alert("Failed to approve."); }
     };
@@ -429,7 +429,7 @@ export default function AdminLostFound() {
     const handleDelete = async (item: PostItem) => {
         if (!window.confirm(`Delete "${item.itemName}"?`)) return;
         try {
-            await fetch(`http://localhost:8080/api/admin/${item.type}/${item.id}`, { method: "DELETE" });
+            await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/${item.type}/${item.id}`, { method: "DELETE" });
             fetchPosts();
         } catch { alert("Failed to delete."); }
     };
@@ -448,7 +448,7 @@ export default function AdminLostFound() {
     const handleSaveEdit = async () => {
         if (!editItem) return;
         try {
-            await fetch(`http://localhost:8080/api/admin/${editItem.type}/${editItem.id}/edit`, {
+            await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/${editItem.type}/${editItem.id}/edit`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -467,7 +467,7 @@ export default function AdminLostFound() {
         if (!formItemName.trim() || !formLocation.trim()) return;
         try {
             const adminEmail = sessionStorage.getItem("adminEmail") || "admin@campus.edu";
-            const res = await fetch(`http://localhost:8080/api/${reportType}/report`, {
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/${reportType}/report`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -494,9 +494,9 @@ export default function AdminLostFound() {
         }
     };
 
-    const handleUpdateBookingStatus = async (id: number, status: string) => {
+    const handleUpdateBookingStatus = async (id: string, status: string) => {
         try {
-            await fetch(`http://localhost:8080/api/bookings/${id}`, {
+            await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/bookings/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status }),
@@ -520,7 +520,7 @@ export default function AdminLostFound() {
     const handleSaveBookingEdit = async () => {
         if (!editBooking) return;
         try {
-            await fetch(`http://localhost:8080/api/bookings/${editBooking.id}`, {
+            await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/bookings/${editBooking.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 
 interface MessageReport {
-    id: number;
-    messageId: number;
+    id: string;
+    messageId: string;
     reporterEmail: string;
     reason: string;
     detail: string;
@@ -209,7 +209,7 @@ export default function AdminReports() {
     const fetchReports = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8080/api/admin/reports?status=${filter}`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/reports?status=${filter}`);
             const data = await res.json();
             setReports(data || []);
         } catch (e) {
@@ -224,19 +224,19 @@ export default function AdminReports() {
         fetchReports();
     }, [filter]);
 
-    const deleteMessage = async (messageId: number) => {
+    const deleteMessage = async (messageId: string) => {
         if (!window.confirm("Are you sure you want to delete this message? This action cannot be undone.")) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/admin/messages/${messageId}`, { method: "DELETE" });
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/messages/${messageId}`, { method: "DELETE" });
             if (res.ok) fetchReports();
         } catch (e) {
             console.error(e);
         }
     };
 
-    const dismissReport = async (reportId: number) => {
+    const dismissReport = async (reportId: string) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/admin/reports/${reportId}/dismiss`, { method: "PUT" });
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/admin/reports/${reportId}/dismiss`, { method: "PUT" });
             if (res.ok) fetchReports();
         } catch (e) {
             console.error(e);

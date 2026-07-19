@@ -186,12 +186,12 @@ export default function Profile() {
 
     const fetchProfile = async () => {
         try {
-            const resp = await fetch(`http://localhost:8080/api/profile/${userEmail}`);
+            const resp = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/profile/${userEmail}`);
             if (resp.ok) {
                 const data = await resp.json();
                 setProfile({
                     ...data,
-                    profilePhoto: data.profilePhoto ? `http://localhost:8080${data.profilePhoto}` : ""
+                    profilePhoto: data.profilePhoto ? `${process.env.REACT_APP_API_URL || "http://localhost:8080"}${data.profilePhoto}` : ""
                 });
             }
         } catch (err) {
@@ -209,7 +209,7 @@ export default function Profile() {
     const handleSave = async () => {
         setSaving(true);
         try {
-            const resp = await fetch(`http://localhost:8080/api/profile/${userEmail}`, {
+            const resp = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/profile/${userEmail}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(profile)
@@ -237,13 +237,13 @@ export default function Profile() {
         formData.append("file", file);
 
         try {
-            const resp = await fetch(`http://localhost:8080/api/profile/upload-photo/${userEmail}`, {
+            const resp = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/profile/upload-photo/${userEmail}`, {
                 method: "POST",
                 body: formData
             });
             if (resp.ok) {
                 const photoPath = await resp.text();
-                setProfile(prev => ({ ...prev, profilePhoto: `http://localhost:8080${photoPath}` }));
+                setProfile(prev => ({ ...prev, profilePhoto: `${process.env.REACT_APP_API_URL || "http://localhost:8080"}${photoPath}` }));
             }
         } catch (err) {
             console.error("Failed to upload photo", err);

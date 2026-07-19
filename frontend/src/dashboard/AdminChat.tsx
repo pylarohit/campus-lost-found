@@ -14,12 +14,12 @@ import {
 import SockJS from "sockjs-client";
 import { Client, IMessage } from "@stomp/stompjs";
 
-const API = "http://localhost:8080/api/chat";
+const API = (process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/chat";
 
 // ── Types ────────────────────────────────────
 
 interface ChatRoom {
-    id: number;
+    id: string;
     roomId: string;
     participantOne: string;
     participantTwo: string;
@@ -31,7 +31,7 @@ interface ChatRoom {
 }
 
 interface Message {
-    id: number;
+    id: string;
     roomId: string;
     senderEmail: string;
     senderName: string;
@@ -369,7 +369,7 @@ export default function AdminChat() {
 
     useEffect(() => {
         const client = new Client({
-            webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+            webSocketFactory: () => new SockJS((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/ws"),
             reconnectDelay: 5000,
             onConnect: () => console.log("✅ Admin WebSocket connected"),
         });

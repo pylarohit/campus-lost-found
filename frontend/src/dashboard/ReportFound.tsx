@@ -22,7 +22,7 @@ import {
 // ── Types ───────────────────────────────────
 
 interface FoundItem {
-    id: number;
+    id: string;
     itemName: string;
     description: string;
     location: string;
@@ -354,7 +354,7 @@ export default function ReportFound() {
     const [showModal, setShowModal] = useState(false);
     const [viewItem, setViewItem] = useState<FoundItem | null>(null);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
-    const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+    const [hoveredCard, setHoveredCard] = useState<string | null>(null);
     const [hoveredBannerBtn, setHoveredBannerBtn] = useState(false);
     const [hoveredReportBtn, setHoveredReportBtn] = useState(false);
     const [hoveredHistoryBtn, setHoveredHistoryBtn] = useState(false);
@@ -374,7 +374,7 @@ export default function ReportFound() {
     const fetchItems = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:8080/api/found/my?email=${encodeURIComponent(userEmail)}`);
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/found/my?email=${encodeURIComponent(userEmail)}`);
             if (res.ok) setItems(await res.json());
         } catch (err) {
             console.error("Failed to fetch found items:", err);
@@ -417,7 +417,7 @@ export default function ReportFound() {
     const handleSubmit = async () => {
         if (!itemName.trim() || !location.trim()) return;
         try {
-            const res = await fetch("http://localhost:8080/api/found/report", {
+            const res = await fetch((process.env.REACT_APP_API_URL || "${process.env.REACT_APP_API_URL || "http://localhost:8080"}") + "/api/found/report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -438,10 +438,10 @@ export default function ReportFound() {
         }
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         if (!window.confirm("Delete this found item?")) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/found/${id}`, { method: "DELETE" });
+            const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/found/${id}`, { method: "DELETE" });
             if (res.ok) fetchItems();
             else alert("Failed to delete item.");
         } catch {

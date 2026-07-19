@@ -1,36 +1,28 @@
 package com.campustrack.entity;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "chat_message")
+@Document
 public class ChatMessage {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(name = "room_id", nullable = false)
-    private String roomId;
+        private String roomId;
 
-    @Column(name = "sender_email", nullable = false)
-    private String senderEmail;
+        private String senderEmail;
 
-    @Column(name = "sender_name")
-    private String senderName;
+        private String senderName;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String content;
+        private String content;
 
-    @Column(name = "message_type")
-    private String messageType = "TEXT"; // TEXT, IMAGE, SYSTEM
+        private String messageType = "TEXT"; // TEXT, IMAGE, SYSTEM
 
-    @Column(name = "sent_at")
-    private LocalDateTime sentAt = LocalDateTime.now();
+        private LocalDateTime sentAt = LocalDateTime.now();
 
-    @Column(name = "is_read")
-    private boolean isRead = false;
+        private boolean isRead = false;
 
     public ChatMessage() {
     }
@@ -44,7 +36,7 @@ public class ChatMessage {
     }
 
     // Getters & Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

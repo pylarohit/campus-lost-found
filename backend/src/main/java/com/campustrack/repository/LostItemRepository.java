@@ -1,11 +1,11 @@
 package com.campustrack.repository;
 
 import com.campustrack.entity.LostItem;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface LostItemRepository extends JpaRepository<LostItem, Long> {
+public interface LostItemRepository extends MongoRepository<LostItem, String> {
     List<LostItem> findByReportedBy(String reportedBy);
 
     List<LostItem> findByFlaggedTrue();

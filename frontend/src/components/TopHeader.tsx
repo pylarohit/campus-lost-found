@@ -240,7 +240,7 @@ export default function TopHeader({ onToggleSidebar }: TopHeaderProps) {
             setLoading(true);
             try {
                 // Fetch lost/found from API
-                const res = await fetch(`http://localhost:8080/api/search/items?q=${encodeURIComponent(query)}`);
+                const res = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}/api/search/items?q=${encodeURIComponent(query)}`);
                 if (!res.ok) throw new Error("Search API failed");
                 const apiData = await res.json();
 
